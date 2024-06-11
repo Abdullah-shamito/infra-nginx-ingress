@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "{{ include "infra-nginx-ingress-trial.fullname" . }}-test-connection"
+  labels:
+    {{- include "infra-nginx-ingress-trial.labels" . | nindent 8 }}
+spec:
+  containers:
+    - name: wget
+      image: busybox
+      command: ['wget']
+      args: ['{{ include "infra-nginx-ingress-trial.fullname" . }}:{{ .Values.controller.service.port }}']
+  restartPolicy: Never

@@ -1,0 +1,63 @@
+controller:
+  replicaCount: 1
+  image:
+    repository: nginx/nginx-ingress
+    tag: "0.32.0"
+    pullPolicy: IfNotPresent
+  service:
+    type: LoadBalancer
+    port: 80
+    annotations:
+      nginx-trial: "true"
+  ingressClassByName: true
+  ingressClassResource:
+    default: true
+    enabled: true
+    name: "nginx-trial"
+    isDefaultClass: false
+  watchIngressWithoutClass: false
+  # This is essential to ensure it doesn't listen to other classes
+  scope:
+    enabled: true
+    ingressClass: "nginx-trial"
+
+# Ingress settings added to handle its deployment conditionally
+ingress:
+  enabled: false  # Set this to true if you wish to create an Ingress resource
+  annotations: {}
+  hosts:
+    - host: chart-example.local
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+autoscaling:
+  enabled: false  # Change to true if you want HPA to be set up
+  minReplicas: 1
+  maxReplicas: 100
+  targetCPUUtilizationPercentage: 80
+  # targetMemoryUtilizationPercentage: 80  # Uncomment if you want to target memory utilization
+
+
+serviceAccount:
+  create: true
+  automount: true
+  annotations: {}
+  name: ""  # Leave blank for Helm to generate automatically
+
+podAnnotations: {}
+
+securityContext: {}
+  # Example values, adjust as needed
+  # runAsUser: 101
+
+resources: {}
+
+livenessProbe:
+  httpGet:
+    path: /
+    port: http
+
+readinessProbe:
+  httpGet:
+    path: /
+    port: http
